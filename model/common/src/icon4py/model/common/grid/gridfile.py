@@ -8,6 +8,7 @@
 
 import enum
 import logging
+import typing
 
 import numpy as np
 from gt4py import next as gtx
@@ -27,6 +28,10 @@ except ImportError:
 
         def __init__(self, *args, **kwargs):
             raise ModuleNotFoundError("NetCDF4 is not installed.")
+
+
+class HasSize(typing.Protocol):
+    size: int
 
 
 class GridFileName(str, enum.Enum):
@@ -264,7 +269,7 @@ class GridFile:
     ) -> np.ndarray:
         """Read a integer field from the grid file.
 
-        Reads as gtx.int32.
+        Reads as gtx.int32 or gtx.uin16 if the size constraint (< 2**16).
 
         Args:
             name: name of the field to read
@@ -276,12 +281,36 @@ class GridFile:
         _log.debug(f"reading {name}: transposing = {transpose}")
         return self.variable(name, indices, transpose=transpose, dtype=gtx.int32)
 
+    def size_t_variable(
+        self, name: FieldName, indices: np.ndarray = None, transpose: bool = True
+    ) -> np.ndarray:
+        """Read a integer field from the grid file.
+
+        Reads as or gtx.uin16 if the size constraint (< 2**16) is fulfilled. Falls back on gtx.int32 else.
+
+        Args:
+            name: name of the field to read
+            transpose: flag to indicate whether the file should be transposed (for 2d fields)
+        Returns:
+            NDArray: field data
+
+        """
+        _log.debug(f"reading {name}: transposing = {transpose}")
+        return self.variable(
+            name,
+            indices,
+            transpose=transpose,
+            dtype=gtx.uint16,
+            conditional_dtype=lambda var: gtx.uint16 if var.size < 2**16 else gtx.int32,
+        )
+
     def variable(
         self,
         name: FieldName,
         indices: np.ndarray = None,
         transpose=False,
         dtype: np.dtype = gtx.float64,
+        conditional_dtype: typing.Callable[[HasSize], np.dtype] | None = None,
     ) -> np.ndarray:
         """Read a field from the grid file.
 
@@ -296,6 +325,8 @@ class GridFile:
         try:
             variable = self._dataset.variables[name]
             _log.debug(f"reading {name}: transposing = {transpose}")
+            if conditional_dtype is not None:
+                dtype = conditional_dtype(variable)
             data = variable[:] if indices is None else variable[indices]
             data = np.array(data, dtype=dtype)
             return np.transpose(data) if transpose else data
