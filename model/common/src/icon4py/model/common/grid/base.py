@@ -13,6 +13,7 @@ from collections.abc import Callable, Sequence
 from types import ModuleType
 
 import gt4py.next as gtx
+import numpy as np
 from gt4py.next import allocators as gtx_allocators, common as gtx_common
 
 from icon4py.model.common import dimension as dims
@@ -183,7 +184,7 @@ def construct_connectivity(
         [from_dim, dim],
         to_dim,
         data=table,
-        dtype=gtx.int32,
+        dtype=gtx.uint16 if np.max(table) < 2**16 and np.min(table) >= 0 else gtx.int32,
         skip_value=skip_value,
         allocator=allocator,
     )

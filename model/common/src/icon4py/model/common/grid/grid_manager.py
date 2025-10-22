@@ -374,7 +374,9 @@ class GridManager:
         )
 
     def _get_index_field(self, field: gridfile.GridFileName, transpose=True, apply_offset=True):
-        field = self._reader.size_t_variable(field, transpose=transpose)
+        # TODO(ricoh): remove commented code unless needed
+        # field = self._reader.size_t_variable(field, transpose=transpose)
+        field = self._reader.int_variable(field, transpose=transpose)
         if apply_offset:
             field = field + self._transformation(field)
         return field

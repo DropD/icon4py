@@ -281,6 +281,7 @@ class GridFile:
         _log.debug(f"reading {name}: transposing = {transpose}")
         return self.variable(name, indices, transpose=transpose, dtype=gtx.int32)
 
+    # TODO(ricoh): remove unless still needed
     def size_t_variable(
         self, name: FieldName, indices: np.ndarray = None, transpose: bool = True
     ) -> np.ndarray:
@@ -301,7 +302,9 @@ class GridFile:
             indices,
             transpose=transpose,
             dtype=gtx.uint16,
-            conditional_dtype=lambda var: gtx.uint16 if np.max(var[:]) < 2**16 else gtx.int32,
+            conditional_dtype=lambda var: gtx.uint16
+            if (np.max(var) < 2**16 and np.min(var) >= 0)
+            else gtx.int32,
         )
 
     def variable(
