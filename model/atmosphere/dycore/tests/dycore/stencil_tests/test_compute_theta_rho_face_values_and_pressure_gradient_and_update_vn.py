@@ -121,9 +121,9 @@ def compute_theta_rho_face_value_by_miura_scheme_numpy(
     return rho_at_edges_on_model_levels, theta_v_at_edges_on_model_levels
 
 
-@pytest.mark.embedded_remap_error
-@pytest.mark.skip_value_error
-@pytest.mark.uses_as_offset
+# @pytest.mark.embedded_remap_error
+# @pytest.mark.skip_value_error
+# @pytest.mark.uses_as_offset
 class TestComputeThetaRhoPressureGradientAndUpdateVn(stencil_tests.StencilTest):
     PROGRAM = compute_theta_rho_face_values_and_pressure_gradient_and_update_vn
     OUTPUTS = (
@@ -576,7 +576,7 @@ class TestComputeThetaRhoPressureGradientAndUpdateVnContinuousBenchmarking(
             self, grid
         )
         base_data["is_iau_active"] = False
-        base_data["limited_area"] = False
+        base_data["limited_area"] = grid.limited_area
         base_data["nflatlev"] = 6
         base_data["nflat_gradp"] = 35
         return base_data
