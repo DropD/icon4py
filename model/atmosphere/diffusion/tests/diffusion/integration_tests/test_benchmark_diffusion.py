@@ -14,7 +14,7 @@ import pytest
 
 import icon4py.model.common.dimension as dims
 import icon4py.model.common.grid.states as grid_states
-from icon4py.model.atmosphere.diffusion import diffusion, diffusion_states
+from icon4py.model.atmosphere.diffusion import config as diffusion_cfg, diffusion, diffusion_states
 from icon4py.model.common import constants, model_backends, model_options
 from icon4py.model.common.decomposition import definitions as decomp_defs
 from icon4py.model.common.grid import (
@@ -52,7 +52,7 @@ def test_diffusion_benchmark(  # noqa: PLR0917 [too-many-positional-arguments]
     dtime = 10.0
 
     config = diffusion.DiffusionConfig(
-        diffusion_type=diffusion.DiffusionType.SMAGORINSKY_4TH_ORDER,
+        diffusion_type=diffusion_cfg.DiffusionType.SMAGORINSKY_4TH_ORDER,
         hdiff_w=True,
         hdiff_vn=True,
         type_t_diffu=diffusion.TemperatureDiscretizationType.HETEROGENEOUS,

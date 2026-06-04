@@ -12,7 +12,7 @@ import logging
 
 from gt4py.next.instrumentation import metrics as gtx_metrics
 
-from icon4py.model.atmosphere.diffusion import diffusion
+from icon4py.model.atmosphere.diffusion import config as diffusion_cfg, diffusion
 from icon4py.model.atmosphere.dycore import dycore_states, solve_nonhydro as solve_nh
 from icon4py.model.common import model_backends
 from icon4py.model.common.grid import vertical as v_grid
@@ -72,7 +72,7 @@ def read_config(
 
     def _mch_ch_r04b09_diffusion_config():
         return diffusion.DiffusionConfig(
-            diffusion_type=diffusion.DiffusionType.SMAGORINSKY_4TH_ORDER,
+            diffusion_type=diffusion_cfg.DiffusionType.SMAGORINSKY_4TH_ORDER,
             hdiff_w=True,
             hdiff_vn=True,
             type_t_diffu=diffusion.TemperatureDiscretizationType.HETEROGENEOUS,
@@ -102,7 +102,7 @@ def read_config(
 
     def _jabw_diffusion_config(n_substeps: int):
         return diffusion.DiffusionConfig(
-            diffusion_type=diffusion.DiffusionType.SMAGORINSKY_4TH_ORDER,
+            diffusion_type=diffusion_cfg.DiffusionType.SMAGORINSKY_4TH_ORDER,
             hdiff_w=True,
             hdiff_vn=True,
             hdiff_temp=False,

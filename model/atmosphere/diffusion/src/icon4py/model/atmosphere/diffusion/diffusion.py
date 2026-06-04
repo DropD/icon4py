@@ -21,7 +21,11 @@ import gt4py.next.typing as gtx_typing
 
 import icon4py.model.common.grid.states as grid_states
 import icon4py.model.common.states.prognostic_state as prognostics
-from icon4py.model.atmosphere.diffusion import diffusion_states, diffusion_utils
+from icon4py.model.atmosphere.diffusion import (
+    config as diffusion_cfg,
+    diffusion_states,
+    diffusion_utils,
+)
 from icon4py.model.atmosphere.diffusion.diffusion_utils import (
     copy_field,
     init_diffusion_local_fields_for_regular_timestep,
@@ -61,21 +65,6 @@ Supports only diffusion_type (=hdiff_order) 5 from the diffusion namelist.
 """
 
 log = logging.getLogger(__name__)
-
-
-class DiffusionType(int, enum.Enum):
-    """
-    Order of nabla operator for diffusion.
-
-    Note: Called `hdiff_order` in `mo_diffusion_nml.f90`.
-    Note: We currently only support type 5.
-    """
-
-    NO_DIFFUSION = -1  #: no diffusion
-    LINEAR_2ND_ORDER = 2  #: 2nd order linear diffusion on all vertical levels
-    SMAGORINSKY_NO_BACKGROUND = 3  #: Smagorinsky diffusion without background diffusion
-    LINEAR_4TH_ORDER = 4  #: 4th order linear diffusion on all vertical levels
-    SMAGORINSKY_4TH_ORDER = 5  #: Smagorinsky diffusion with fourth-order background diffusion
 
 
 class SmagorinskyStencilType(int, enum.Enum):
@@ -148,7 +137,7 @@ class DiffusionConfig:
     def __init__(
         self,
         *,
-        diffusion_type: DiffusionType = DiffusionType.SMAGORINSKY_4TH_ORDER,
+        diffusion_type: diffusion_cfg.DiffusionType = diffusion_cfg.DiffusionType.SMAGORINSKY_4TH_ORDER,
         hdiff_w: bool = True,
         hdiff_vn: bool = True,
         hdiff_temp: bool = True,
@@ -316,7 +305,7 @@ class DiffusionConfig:
         turbdiff_nml = atmo_dict["turbdiff_nml"]
         run_nml = atmo_dict["run_nml"]
         return cls(
-            diffusion_type=DiffusionType(diffusion_nml["hdiff_order"]),
+            diffusion_type=diffusion_cfg.DiffusionType(diffusion_nml["hdiff_order"]),
             hdiff_w=diffusion_nml["lhdiff_w"],
             hdiff_vn=diffusion_nml["lhdiff_vn"],
             hdiff_temp=diffusion_nml["lhdiff_temp"],
@@ -346,7 +335,7 @@ class DiffusionConfig:
 
     def _validate(self):
         """Apply consistency checks and validation on configuration parameters."""
-        if self.diffusion_type != DiffusionType.SMAGORINSKY_4TH_ORDER:
+        if self.diffusion_type != diffusion_cfg.DiffusionType.SMAGORINSKY_4TH_ORDER:
             raise NotImplementedError(
                 "Only diffusion type 5 = `Smagorinsky diffusion with fourth-order background "
                 "diffusion` is implemented"
