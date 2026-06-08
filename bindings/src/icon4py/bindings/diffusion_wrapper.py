@@ -31,12 +31,7 @@ from icon4py.bindings import (
     icon4py_export,
 )
 from icon4py.model.atmosphere.diffusion import config as diffusion_cfg
-from icon4py.model.atmosphere.diffusion.diffusion import (
-    Diffusion,
-    DiffusionConfig,
-    DiffusionParams,
-    ForcingType,
-)
+from icon4py.model.atmosphere.diffusion.diffusion import Diffusion, DiffusionConfig, DiffusionParams
 from icon4py.model.atmosphere.diffusion.diffusion_states import (
     DiffusionDiagnosticState,
     DiffusionInterpolationState,
@@ -139,7 +134,7 @@ def diffusion_init(  # noqa: PLR0917 [too-many-positional-arguments]
         velocity_boundary_diffusion_denom=denom_diffu_v,
         max_nudging_coefficient=nudge_max_coeff,
         shear_type=diffusion_cfg.TurbulenceShearForcingType(itype_sher),
-        iforcing=ForcingType(iforcing),
+        iforcing=diffusion_cfg.ForcingType(iforcing),
         a_hshr=a_hshr,
         loutshs=loutshs,
     )

@@ -70,3 +70,15 @@ class TurbulenceShearForcingType(int, enum.Enum):
         2  #: as `VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND` plus shear form vertical velocity
     )
     VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND_LTHESH = 3  #: same as `VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND` but scaling of coarse-grid horizontal shear production term with 1/sqrt(Ri) (if LTKESH = TRUE)
+
+
+class ForcingType(int, enum.Enum):
+    """
+    Type of physics forcing applied to the model.
+
+    Note: called `iforcing` in `mo_run_nml.f90`
+    """
+
+    NO_FORCING = 0  #: no physics forcing (diagnostic / idealized runs)
+    AES = 2  #: Atmospheric Earth System / ECHAM forcing (iaes)
+    NWP = 3  #: Numerical Weather Prediction forcing (inwp)

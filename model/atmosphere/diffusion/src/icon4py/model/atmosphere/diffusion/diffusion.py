@@ -9,7 +9,6 @@
 from __future__ import annotations
 
 import dataclasses
-import enum
 import functools
 import logging
 import math
@@ -67,18 +66,6 @@ Supports only diffusion_type (=hdiff_order) 5 from the diffusion namelist.
 log = logging.getLogger(__name__)
 
 
-class ForcingType(int, enum.Enum):
-    """
-    Type of physics forcing applied to the model.
-
-    Note: called `iforcing` in `mo_run_nml.f90`
-    """
-
-    NO_FORCING = 0  #: no physics forcing (diagnostic / idealized runs)
-    AES = 2  #: Atmospheric Earth System / ECHAM forcing (iaes)
-    NWP = 3  #: Numerical Weather Prediction forcing (inwp)
-
-
 class DiffusionConfig:
     """
     Contains necessary parameter to configure a diffusion run.
@@ -122,7 +109,7 @@ class DiffusionConfig:
         max_nudging_coefficient: float = constants.DEFAULT_DYNAMICS_TO_PHYSICS_TIMESTEP_RATIO
         * 0.02,
         shear_type: diffusion_cfg.TurbulenceShearForcingType = diffusion_cfg.TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND,
-        iforcing: ForcingType = ForcingType.NO_FORCING,
+        iforcing: diffusion_cfg.ForcingType = diffusion_cfg.ForcingType.NO_FORCING,
         a_hshr: float = 1.0,
         loutshs: bool = False,
     ):
@@ -241,7 +228,7 @@ class DiffusionConfig:
 
         #: Type of physics forcing
         #: Called 'iforcing' in mo_run_nml.f90
-        self.iforcing: ForcingType = iforcing
+        self.iforcing: diffusion_cfg.ForcingType = iforcing
 
         #: Scaling factor for horizontal shear production term
         #: Called 'a_hshr' in mo_turbdiff_nml.f90
@@ -287,7 +274,7 @@ class DiffusionConfig:
             velocity_boundary_diffusion_denom=gridref_nml["denom_diffu_v"],
             temperature_boundary_diffusion_denom=gridref_nml["denom_diffu_t"],
             shear_type=diffusion_cfg.TurbulenceShearForcingType(turbdiff_nml["itype_sher"]),
-            iforcing=ForcingType(run_nml["iforcing"]),
+            iforcing=diffusion_cfg.ForcingType(run_nml["iforcing"]),
             a_hshr=turbdiff_nml["a_hshr"],
             **overrides,
         )
@@ -867,7 +854,10 @@ class Diffusion:
             # computations, which happen right after diffusion, do not require the halo lines to be correct and there
             # is another halo exchange after the physics are applied.
             log.debug("running stencil 13 to 16 apply_diffusion_to_theta_and_exner: end")
-            if initial_run or self.config.iforcing not in (ForcingType.NWP, ForcingType.AES):
+            if initial_run or self.config.iforcing not in (
+                diffusion_cfg.ForcingType.NWP,
+                diffusion_cfg.ForcingType.AES,
+            ):
                 log.debug("communication of prognostic cell fields: theta and exner - start")
                 self._exchange.exchange(
                     dims.CellDim,
@@ -880,7 +870,10 @@ class Diffusion:
         # The halo exchange can be skipped in the case of NWP or AES physics because the column-wise physics
         # computations, which happen right after diffusion, do not require the halo lines to be correct and there
         # is another halo exchange after the physics are applied.
-        if initial_run or self.config.iforcing not in (ForcingType.NWP, ForcingType.AES):
+        if initial_run or self.config.iforcing not in (
+            diffusion_cfg.ForcingType.NWP,
+            diffusion_cfg.ForcingType.AES,
+        ):
             log.debug("communication of prognostic cell field: w - start")
             self._exchange.exchange(
                 dims.CellDim,
