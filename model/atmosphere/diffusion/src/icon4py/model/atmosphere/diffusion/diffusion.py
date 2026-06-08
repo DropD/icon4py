@@ -67,18 +67,6 @@ Supports only diffusion_type (=hdiff_order) 5 from the diffusion namelist.
 log = logging.getLogger(__name__)
 
 
-class TemperatureDiscretizationType(int, enum.Enum):
-    """
-    Type of the discretization of the Smagorinsky diffusion of temperature.
-
-    Note: Called `itype_t_diffu` in `mo_diffusion_nml.f90`.
-    Note: We currently only support type 2.
-    """
-
-    HOMOGENEOUS = 1  #: K Lap(T)
-    HETEROGENEOUS = 2  #: Div (K Grad(T))
-
-
 class TurbulenceShearForcingType(int, enum.Enum):
     """
     Type of shear forcing used in turbulence.
@@ -130,7 +118,7 @@ class DiffusionConfig:
         hdiff_smag_w: bool = False,
         type_vn_diffu: diffusion_cfg.SmagorinskyStencilType = diffusion_cfg.SmagorinskyStencilType.DIAMOND_VERTICES,
         smag_3d: bool = False,
-        type_t_diffu: TemperatureDiscretizationType = TemperatureDiscretizationType.HETEROGENEOUS,
+        type_t_diffu: diffusion_cfg.TemperatureDiscretizationType = diffusion_cfg.TemperatureDiscretizationType.HETEROGENEOUS,
         hdiff_efdt_ratio: float = 36.0,
         hdiff_w_efdt_ratio: float = 15.0,
         smagorinski_scaling_factor: float = 0.015,
@@ -298,7 +286,9 @@ class DiffusionConfig:
             hdiff_smag_w=fortran_config.list_to_value(diffusion_nml["lhdiff_smag_w"]),
             type_vn_diffu=diffusion_cfg.SmagorinskyStencilType(diffusion_nml["itype_vn_diffu"]),
             smag_3d=fortran_config.list_to_value(diffusion_nml["lsmag_3d"]),
-            type_t_diffu=TemperatureDiscretizationType(diffusion_nml["itype_t_diffu"]),
+            type_t_diffu=diffusion_cfg.TemperatureDiscretizationType(
+                diffusion_nml["itype_t_diffu"]
+            ),
             hdiff_efdt_ratio=diffusion_nml["hdiff_efdt_ratio"],
             hdiff_w_efdt_ratio=diffusion_nml["hdiff_w_efdt_ratio"],
             smagorinski_scaling_factor=diffusion_nml["hdiff_smag_fac"],
@@ -332,7 +322,7 @@ class DiffusionConfig:
                 "Only type_vn_diffu 1 = `Smagorinsky diffusion with diamond stencil on vertices` is implemented"
             )
 
-        if self.type_t_diffu != TemperatureDiscretizationType.HETEROGENEOUS:
+        if self.type_t_diffu != diffusion_cfg.TemperatureDiscretizationType.HETEROGENEOUS:
             raise NotImplementedError(
                 "Only type_t_diffu 2 = `Smagorinsky diffusion with heterogeneous discretization` is implemented"
             )

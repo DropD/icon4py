@@ -41,3 +41,15 @@ class SmagorinskyStencilType(int, enum.Enum):
         1  #: Smagorinsky diffusion of vn with diamond stencil on vertices (only for vn)
     )
     CELLS_AND_VERTICES = 2  #: Smagorinsky diffusion of vn with stencil on neighboring vertices (E2V) and cell centers (E2C)
+
+
+class TemperatureDiscretizationType(int, enum.Enum):
+    """
+    Type of the discretization of the Smagorinsky diffusion of temperature.
+
+    Note: Called `itype_t_diffu` in `mo_diffusion_nml.f90`.
+    Note: We currently only support type 2.
+    """
+
+    HOMOGENEOUS = 1  #: K Lap(T)
+    HETEROGENEOUS = 2  #: Div (K Grad(T))

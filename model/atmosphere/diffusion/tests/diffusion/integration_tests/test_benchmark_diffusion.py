@@ -55,7 +55,7 @@ def test_diffusion_benchmark(  # noqa: PLR0917 [too-many-positional-arguments]
         diffusion_type=diffusion_cfg.DiffusionType.SMAGORINSKY_4TH_ORDER,
         hdiff_w=True,
         hdiff_vn=True,
-        type_t_diffu=diffusion.TemperatureDiscretizationType.HETEROGENEOUS,
+        type_t_diffu=diffusion_cfg.TemperatureDiscretizationType.HETEROGENEOUS,
         type_vn_diffu=diffusion_cfg.SmagorinskyStencilType.DIAMOND_VERTICES,
         hdiff_efdt_ratio=24.0,
         hdiff_w_efdt_ratio=15.0,
