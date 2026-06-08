@@ -67,23 +67,6 @@ Supports only diffusion_type (=hdiff_order) 5 from the diffusion namelist.
 log = logging.getLogger(__name__)
 
 
-class TurbulenceShearForcingType(int, enum.Enum):
-    """
-    Type of shear forcing used in turbulence.
-
-    Note: called `itype_sher` in `mo_turbdiff_nml.f90`
-    """
-
-    VERTICAL_OF_HORIZONTAL_WIND = 0  #: only vertical shear of horizontal wind
-    VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND = (
-        1  #: as `VERTICAL_ONLY` plus horizontal shear correction
-    )
-    VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND = (
-        2  #: as `VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND` plus shear form vertical velocity
-    )
-    VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND_LTHESH = 3  #: same as `VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND` but scaling of coarse-grid horizontal shear production term with 1/sqrt(Ri) (if LTKESH = TRUE)
-
-
 class ForcingType(int, enum.Enum):
     """
     Type of physics forcing applied to the model.
@@ -138,7 +121,7 @@ class DiffusionConfig:
         temperature_boundary_diffusion_denom: float = 135.0,
         max_nudging_coefficient: float = constants.DEFAULT_DYNAMICS_TO_PHYSICS_TIMESTEP_RATIO
         * 0.02,
-        shear_type: TurbulenceShearForcingType = TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND,
+        shear_type: diffusion_cfg.TurbulenceShearForcingType = diffusion_cfg.TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND,
         iforcing: ForcingType = ForcingType.NO_FORCING,
         a_hshr: float = 1.0,
         loutshs: bool = False,
@@ -303,7 +286,7 @@ class DiffusionConfig:
             zdiffu_t=nonhydrostatic_nml["l_zdiffu_t"],
             velocity_boundary_diffusion_denom=gridref_nml["denom_diffu_v"],
             temperature_boundary_diffusion_denom=gridref_nml["denom_diffu_t"],
-            shear_type=TurbulenceShearForcingType(turbdiff_nml["itype_sher"]),
+            shear_type=diffusion_cfg.TurbulenceShearForcingType(turbdiff_nml["itype_sher"]),
             iforcing=ForcingType(run_nml["iforcing"]),
             a_hshr=turbdiff_nml["a_hshr"],
             **overrides,
@@ -334,14 +317,14 @@ class DiffusionConfig:
             raise NotImplementedError("3D Smagorinsky diffusion computation is not implemented")
 
         if self.shear_type not in (
-            TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND,
-            TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND,
-            TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND,
+            diffusion_cfg.TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND,
+            diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND,
+            diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND,
         ):
             raise NotImplementedError(
-                f"Turbulence Shear only {TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND} "
-                f"and {TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND} "
-                f"and {TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND} "
+                f"Turbulence Shear only {diffusion_cfg.TurbulenceShearForcingType.VERTICAL_OF_HORIZONTAL_WIND} "
+                f"and {diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND} "
+                f"and {diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND} "
                 f"implemented"
             )
 
@@ -780,7 +763,7 @@ class Diffusion:
 
         if (
             self.config.shear_type
-            >= TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND
+            >= diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND
             or self.config.loutshs
             or self.config.a_hshr > 0.0
         ):

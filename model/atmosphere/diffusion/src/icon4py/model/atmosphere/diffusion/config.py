@@ -53,3 +53,20 @@ class TemperatureDiscretizationType(int, enum.Enum):
 
     HOMOGENEOUS = 1  #: K Lap(T)
     HETEROGENEOUS = 2  #: Div (K Grad(T))
+
+
+class TurbulenceShearForcingType(int, enum.Enum):
+    """
+    Type of shear forcing used in turbulence.
+
+    Note: called `itype_sher` in `mo_turbdiff_nml.f90`
+    """
+
+    VERTICAL_OF_HORIZONTAL_WIND = 0  #: only vertical shear of horizontal wind
+    VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND = (
+        1  #: as `VERTICAL_ONLY` plus horizontal shear correction
+    )
+    VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND = (
+        2  #: as `VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND` plus shear form vertical velocity
+    )
+    VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND_LTHESH = 3  #: same as `VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND` but scaling of coarse-grid horizontal shear production term with 1/sqrt(Ri) (if LTKESH = TRUE)

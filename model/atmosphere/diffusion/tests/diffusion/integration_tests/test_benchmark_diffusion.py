@@ -64,7 +64,7 @@ def test_diffusion_benchmark(  # noqa: PLR0917 [too-many-positional-arguments]
         velocity_boundary_diffusion_denom=150.0,
         max_nudging_coefficient=0.375,
         n_substeps=5,
-        shear_type=diffusion.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND,
+        shear_type=diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND,
     )
 
     diffusion_parameters = diffusion.DiffusionParams(config)

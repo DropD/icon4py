@@ -8,7 +8,7 @@
 
 import numpy as np
 
-from icon4py.model.atmosphere.diffusion import diffusion, diffusion_states
+from icon4py.model.atmosphere.diffusion import config as diffusion_cfg, diffusion, diffusion_states
 from icon4py.model.common.states import prognostic_state as prognostics
 from icon4py.model.testing import serialbox as sb, test_utils
 
@@ -30,7 +30,7 @@ def verify_diffusion_fields(
 
     validate_diagnostics = (
         config.shear_type
-        >= diffusion.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND
+        >= diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_WIND
     )
     if validate_diagnostics:
         ref_div_ic = diffusion_savepoint.div_ic().asnumpy()

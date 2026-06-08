@@ -84,7 +84,7 @@ def read_config(
             velocity_boundary_diffusion_denom=150.0,
             max_nudging_coefficient=0.375,
             n_substeps=n_substeps_reduced,
-            shear_type=diffusion.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND,
+            shear_type=diffusion_cfg.TurbulenceShearForcingType.VERTICAL_HORIZONTAL_OF_HORIZONTAL_VERTICAL_WIND,
         )
 
     def _mch_ch_r04b09_nonhydro_config():
