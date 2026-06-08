@@ -9,6 +9,8 @@
 Datatypes used for configuring diffusion.
 """
 
+from __future__ import annotations
+
 import enum
 
 
@@ -25,3 +27,17 @@ class DiffusionType(int, enum.Enum):
     SMAGORINSKY_NO_BACKGROUND = 3  #: Smagorinsky diffusion without background diffusion
     LINEAR_4TH_ORDER = 4  #: 4th order linear diffusion on all vertical levels
     SMAGORINSKY_4TH_ORDER = 5  #: Smagorinsky diffusion with fourth-order background diffusion
+
+
+class SmagorinskyStencilType(int, enum.Enum):
+    """
+    Type of the reconstruction stencil for the Smagorinsky diffusion of normal wind (vn).
+
+    Note: Called `itype_vn_diffu` in `mo_diffusion_nml.f90`.
+    Note: We currently only support type 1 in combination with lsmag_3d=False.
+    """
+
+    DIAMOND_VERTICES = (
+        1  #: Smagorinsky diffusion of vn with diamond stencil on vertices (only for vn)
+    )
+    CELLS_AND_VERTICES = 2  #: Smagorinsky diffusion of vn with stencil on neighboring vertices (E2V) and cell centers (E2C)

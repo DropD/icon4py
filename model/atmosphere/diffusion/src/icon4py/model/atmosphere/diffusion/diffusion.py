@@ -67,20 +67,6 @@ Supports only diffusion_type (=hdiff_order) 5 from the diffusion namelist.
 log = logging.getLogger(__name__)
 
 
-class SmagorinskyStencilType(int, enum.Enum):
-    """
-    Type of the reconstruction stencil for the Smagorinsky diffusion of normal wind (vn).
-
-    Note: Called `itype_vn_diffu` in `mo_diffusion_nml.f90`.
-    Note: We currently only support type 1 in combination with lsmag_3d=False.
-    """
-
-    DIAMOND_VERTICES = (
-        1  #: Smagorinsky diffusion of vn with diamond stencil on vertices (only for vn)
-    )
-    CELLS_AND_VERTICES = 2  #: Smagorinsky diffusion of vn with stencil on neighboring vertices (E2V) and cell centers (E2C)
-
-
 class TemperatureDiscretizationType(int, enum.Enum):
     """
     Type of the discretization of the Smagorinsky diffusion of temperature.
@@ -142,7 +128,7 @@ class DiffusionConfig:
         hdiff_vn: bool = True,
         hdiff_temp: bool = True,
         hdiff_smag_w: bool = False,
-        type_vn_diffu: SmagorinskyStencilType = SmagorinskyStencilType.DIAMOND_VERTICES,
+        type_vn_diffu: diffusion_cfg.SmagorinskyStencilType = diffusion_cfg.SmagorinskyStencilType.DIAMOND_VERTICES,
         smag_3d: bool = False,
         type_t_diffu: TemperatureDiscretizationType = TemperatureDiscretizationType.HETEROGENEOUS,
         hdiff_efdt_ratio: float = 36.0,
@@ -310,7 +296,7 @@ class DiffusionConfig:
             hdiff_vn=diffusion_nml["lhdiff_vn"],
             hdiff_temp=diffusion_nml["lhdiff_temp"],
             hdiff_smag_w=fortran_config.list_to_value(diffusion_nml["lhdiff_smag_w"]),
-            type_vn_diffu=SmagorinskyStencilType(diffusion_nml["itype_vn_diffu"]),
+            type_vn_diffu=diffusion_cfg.SmagorinskyStencilType(diffusion_nml["itype_vn_diffu"]),
             smag_3d=fortran_config.list_to_value(diffusion_nml["lsmag_3d"]),
             type_t_diffu=TemperatureDiscretizationType(diffusion_nml["itype_t_diffu"]),
             hdiff_efdt_ratio=diffusion_nml["hdiff_efdt_ratio"],
@@ -341,7 +327,7 @@ class DiffusionConfig:
                 "diffusion` is implemented"
             )
 
-        if self.type_vn_diffu != SmagorinskyStencilType.DIAMOND_VERTICES:
+        if self.type_vn_diffu != diffusion_cfg.SmagorinskyStencilType.DIAMOND_VERTICES:
             raise NotImplementedError(
                 "Only type_vn_diffu 1 = `Smagorinsky diffusion with diamond stencil on vertices` is implemented"
             )
