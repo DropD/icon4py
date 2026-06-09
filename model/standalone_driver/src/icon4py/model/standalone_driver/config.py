@@ -17,7 +17,7 @@ from typing import Any
 from gt4py.next.instrumentation import metrics as gtx_metrics
 
 from icon4py.model.atmosphere.advection import advection
-from icon4py.model.atmosphere.diffusion import diffusion
+from icon4py.model.atmosphere.diffusion import config as diffusion_cfg
 from icon4py.model.atmosphere.dycore import solve_nonhydro as solve_nh
 from icon4py.model.atmosphere.subgrid_scale_physics.microphysics import (
     single_moment_six_class_gscp_graupel as graupel,
@@ -94,7 +94,7 @@ class ExperimentConfig:
     vertical_grid: v_grid.VerticalGridConfig
     topography: topography.TopographyConfig
     nonhydrostatic: solve_nh.NonHydrostaticConfig
-    diffusion: diffusion.DiffusionConfig
+    diffusion: diffusion_cfg.DiffusionConfig
     advection: advection.AdvectionConfig
     graupel: graupel.SingleMomentSixClassIconGraupelConfig
     initial_condition: initial_condition.InitialConditionConfig
@@ -140,7 +140,7 @@ def read_config(
     else:
         advection_config = advection.AdvectionConfig.from_fortran_dict(atm_dict)
 
-    diffusion_config = diffusion.DiffusionConfig.from_fortran_dict(
+    diffusion_config = diffusion_cfg.DiffusionConfig.from_fortran_dict(
         atm_dict,
         max_nudging_coefficient=interpolation_config.max_nudging_coefficient,
     )

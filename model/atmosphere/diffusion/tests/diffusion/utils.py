@@ -8,13 +8,13 @@
 
 import numpy as np
 
-from icon4py.model.atmosphere.diffusion import config as diffusion_cfg, diffusion, diffusion_states
+from icon4py.model.atmosphere.diffusion import config as diffusion_cfg, diffusion_states
 from icon4py.model.common.states import prognostic_state as prognostics
 from icon4py.model.testing import serialbox as sb, test_utils
 
 
 def verify_diffusion_fields(
-    config: diffusion.DiffusionConfig,
+    config: diffusion_cfg.DiffusionConfig,
     diagnostic_state: diffusion_states.DiffusionDiagnosticState,
     prognostic_state: prognostics.PrognosticState,
     diffusion_savepoint: sb.IconDiffusionExitSavepoint,

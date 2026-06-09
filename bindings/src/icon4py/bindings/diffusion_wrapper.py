@@ -31,7 +31,7 @@ from icon4py.bindings import (
     icon4py_export,
 )
 from icon4py.model.atmosphere.diffusion import config as diffusion_cfg
-from icon4py.model.atmosphere.diffusion.diffusion import Diffusion, DiffusionConfig, DiffusionParams
+from icon4py.model.atmosphere.diffusion.diffusion import Diffusion, DiffusionParams
 from icon4py.model.atmosphere.diffusion.diffusion_states import (
     DiffusionDiagnosticState,
     DiffusionInterpolationState,
@@ -111,7 +111,7 @@ def diffusion_init(  # noqa: PLR0917 [too-many-positional-arguments]
     allocator = model_backends.get_allocator(actual_backend)
 
     # Diffusion parameters
-    config = DiffusionConfig(
+    config = diffusion_cfg.DiffusionConfig(
         diffusion_type=diffusion_type,
         hdiff_w=hdiff_w,
         hdiff_vn=hdiff_vn,

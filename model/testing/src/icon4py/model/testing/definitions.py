@@ -26,7 +26,7 @@ from icon4py.model.testing import config
 
 
 if TYPE_CHECKING:
-    from icon4py.model.atmosphere.diffusion import diffusion
+    from icon4py.model.atmosphere.diffusion import config as diffusion_cfg
     from icon4py.model.atmosphere.dycore import solve_nonhydro as solve_nh
 
 
@@ -179,7 +179,7 @@ class ExperimentConfig:
     vertical_grid: v_grid.VerticalGridConfig
     topography: topography.TopographyConfig
     nonhydrostatic: solve_nh.NonHydrostaticConfig
-    diffusion: diffusion.DiffusionConfig
+    diffusion: diffusion_cfg.DiffusionConfig
     advection: advection.AdvectionConfig
     graupel: graupel.SingleMomentSixClassIconGraupelConfig
     initial_condition: initial_condition.InitialConditionConfig

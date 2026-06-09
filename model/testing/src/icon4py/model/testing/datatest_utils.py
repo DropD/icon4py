@@ -16,7 +16,7 @@ import urllib.parse
 import gt4py.next.typing as gtx_typing
 
 from icon4py.model.atmosphere.advection import advection
-from icon4py.model.atmosphere.diffusion import diffusion
+from icon4py.model.atmosphere.diffusion import config as diffusion_cfg
 from icon4py.model.atmosphere.dycore import solve_nonhydro as solve_nh
 from icon4py.model.atmosphere.subgrid_scale_physics.microphysics import (
     single_moment_six_class_gscp_graupel as graupel,
@@ -188,7 +188,7 @@ def create_experiment_configuration(
     else:
         advection_config = advection.AdvectionConfig.from_fortran_dict(atm_dict)
 
-    diffusion_config = diffusion.DiffusionConfig.from_fortran_dict(
+    diffusion_config = diffusion_cfg.DiffusionConfig.from_fortran_dict(
         atm_dict,
         max_nudging_coefficient=interpolation_config.max_nudging_coefficient,
     )
