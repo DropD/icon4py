@@ -15,10 +15,24 @@ import dataclasses
 import enum
 import functools
 import math
+import typing
 from typing import Any
 
 from icon4py.model.common import constants
 from icon4py.model.common.utils import fortran_config
+
+
+_T = typing.TypeVar("_T")
+
+
+def _alias_property(attr_name: str, prop_name: str, attr_type: type[_T]) -> property:
+    def getter(self) -> _T:
+        return getattr(self, attr_name)
+
+    def setter(self, value: _T) -> None:
+        return setattr(self, attr_name, value)
+
+    return property(fget=getter, fset=setter, doc=f"Alias to attribute '{attr_name}'")
 
 
 class DiffusionType(int, enum.Enum):
@@ -112,61 +126,41 @@ class DiffusionConfig:
     #: Called 'lhdiff_w' in mo_diffusion_nml.f90
     hdiff_w: bool = True
 
-    @property
-    def apply_to_vertical_wind(self) -> bool:
-        return self.hdiff_w
-
-    @apply_to_vertical_wind.setter
-    def apply_to_vertical_wind(self, value: bool) -> None:
-        self.hdiff_w = value
+    apply_to_vertical_wind: typing.ClassVar[property] = _alias_property(
+        "hdiff_w", "apply_to_vertical_wind", bool
+    )
 
     #: True apply diffusion on the horizontal wind field, is ONLY used in mo_nh_stepping.f90
     #: Called 'lhdiff_vn' in mo_diffusion_nml.f90
     hdiff_vn: bool = True
 
-    @property
-    def apply_to_horizontal_wind(self) -> bool:
-        return self.hdiff_vn
-
-    @apply_to_horizontal_wind.setter
-    def apply_to_horizontal_wind(self, value: bool) -> None:
-        self.hdiff_vn = value
+    apply_to_horizontal_wind: typing.ClassVar[property] = _alias_property(
+        "hdiff_vn", "apply_to_horizontal_wind", bool
+    )
 
     #:  If True, apply horizontal diffusion to temperature field
     #: Called 'lhdiff_temp' in mo_diffusion_nml.f90
     hdiff_temp: bool = True
 
-    @property
-    def apply_to_temperature(self) -> bool:
-        return self.hdiff_temp
-
-    @apply_to_temperature.setter
-    def apply_to_temperature(self, value: bool) -> None:
-        self.hdiff_temp = value
+    apply_to_temperature: typing.ClassVar[property] = _alias_property(
+        "hdiff_temp", "apply_to_temperature", bool
+    )
 
     #: If True, compute Smagorinsky diffusion to vertical wind field
     #: Called 'lhdiff_smag_w' in mo_diffusion_nml.f90
     hdiff_smag_w: bool = False
 
-    @property
-    def apply_smag_diff_to_vertical_wind(self) -> bool:
-        return self.hdiff_smag_w
-
-    @apply_smag_diff_to_vertical_wind.setter
-    def apply_smag_diff_to_vertical_wind(self, value: bool) -> None:
-        self.hdiff_smag_w = value
+    apply_smag_diff_to_vertical_wind: typing.ClassVar[property] = _alias_property(
+        "hdiff_smag_w", "apply_smag_diff_to_vertical_wind", bool
+    )
 
     #: If True, compute 3D Smagorinsky diffusion coefficient
     #: Called 'lsmag_3d' in mo_diffusion_nml.f90
     smag_3d: bool = False
 
-    @property
-    def compute_3d_smag_coeff(self) -> bool:
-        return self.smag_3d
-
-    @compute_3d_smag_coeff.setter
-    def compute_3d_smag_coeff(self, value: bool) -> None:
-        self.smag_3d = value
+    compute_3d_smag_coeff: typing.ClassVar[property] = _alias_property(
+        "smag_3d", "compute_3d_smag_coeff", bool
+    )
 
     #: Options for discretizing the Smagorinsky momentum diffusion
     #: Called 'itype_vn_diffu' in mo_diffusion_nml.f90
@@ -226,13 +220,9 @@ class DiffusionConfig:
     #: Called 'l_zdiffu_t' in mo_nonhydrostatic_nml.f90
     zdiffu_t: bool = True
 
-    @property
-    def apply_zdiffusion_t(self) -> bool:
-        return self.zdiffu_t
-
-    @apply_zdiffusion_t.setter
-    def apply_zdiffusion_t(self, value: bool) -> None:
-        self.zdiffu_t = value
+    apply_zdiffusion_t: typing.ClassVar[property] = _alias_property(
+        "zdiffu_t", "apply_zdiffusion_t", bool
+    )
 
     # from other namelists:
     # from parent namelist mo_nonhydrostatic_nml
@@ -241,13 +231,7 @@ class DiffusionConfig:
     #: Called 'ndyn_substeps' in mo_nonhydrostatic_nml.f90
     n_substeps: int = 5
 
-    @property
-    def ndyn_substeps(self) -> int:
-        return self.n_substeps
-
-    @ndyn_substeps.setter
-    def ndyn_substeps(self, value: int) -> None:
-        self.n_substeps = value
+    ndyn_substeps: typing.ClassVar[property] = _alias_property("n_substeps", "ndyn_substeps", int)
 
     # namelist mo_gridref_nml.f90
 
@@ -255,25 +239,17 @@ class DiffusionConfig:
     #: Called 'denom_diffu_t' in mo_gridref_nml.f90
     temperature_boundary_diffusion_denom: float = 135.0
 
-    @property
-    def temperature_boundary_diffusion_denominator(self) -> float:
-        return self.temperature_boundary_diffusion_denom
-
-    @temperature_boundary_diffusion_denominator.setter
-    def temperature_boundary_diffusion_denominator(self, value: float) -> None:
-        self.temperature_boundary_diffusion_denom = value
+    temperature_boundary_diffusion_denominator: typing.ClassVar[property] = _alias_property(
+        "temperature_boundary_diffusion_denom", "temperature_boundary_diffusion_denominator", float
+    )
 
     #: Denominator for velocity boundary diffusion
     #: Called 'denom_diffu_v' in mo_gridref_nml.f90
     velocity_boundary_diffusion_denom: float = 200.0
 
-    @property
-    def velocity_boundary_diffusion_denominator(self) -> float:
-        return self.velocity_boundary_diffusion_denom
-
-    @velocity_boundary_diffusion_denominator.setter
-    def velocity_boundary_diffusion_denominator(self, value: float) -> None:
-        self.velocity_boundary_diffusion_denom = value
+    velocity_boundary_diffusion_denominator: typing.ClassVar[property] = _alias_property(
+        "velocity_boundary_diffusion_denom", "velocity_boundary_diffusion_denominator", float
+    )
 
     # parameters from namelist: mo_interpol_nml.f90
 
